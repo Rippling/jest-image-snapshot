@@ -64,11 +64,9 @@ function checkResult({
 
       const differencePercentage = result.diffRatio * 100;
       message = () => {
-        let failure;
+        let failure = `Expected image to match or be a close match to snapshot but was ${differencePercentage}% different from snapshot (${result.diffPixelCount} differing pixels).\n`;
         if (result.diffSize) {
           failure = `Expected image to be the same size as the snapshot (${result.imageDimensions.baselineWidth}x${result.imageDimensions.baselineHeight}), but was different (${result.imageDimensions.receivedWidth}x${result.imageDimensions.receivedHeight}).\n`;
-        } else {
-          failure = `Expected image to match or be a close match to snapshot but was ${differencePercentage}% different from snapshot (${result.diffPixelCount} differing pixels).\n`;
         }
 
         failure += `${chalk.bold.red('See diff for details:')} ${chalk.red(result.diffOutputPath)}`;
@@ -134,6 +132,7 @@ function configureToMatchImageSnapshot({
   blur: commonBlur = 0,
   runInProcess: commonRunInProcess = false,
   dumpDiffToConsole: commonDumpDiffToConsole = false,
+  allowSizeMismatch: commonAllowSizeMismatch = false,
 } = {}) {
   return function toMatchImageSnapshot(received, {
     customSnapshotIdentifier = commonCustomSnapshotIdentifier,
@@ -148,6 +147,7 @@ function configureToMatchImageSnapshot({
     blur = commonBlur,
     runInProcess = commonRunInProcess,
     dumpDiffToConsole = commonDumpDiffToConsole,
+    allowSizeMismatch = commonAllowSizeMismatch,
   } = {}) {
     const {
       testPath, currentTestName, isNot, snapshotState,
@@ -196,6 +196,7 @@ function configureToMatchImageSnapshot({
         failureThresholdType,
         updatePassedSnapshot,
         blur,
+        allowSizeMismatch,
       });
 
     return checkResult({
